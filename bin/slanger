@@ -3,6 +3,7 @@
 require 'optparse'
 require 'bundler/setup'
 require 'eventmachine'
+require 'em-synchrony'
 
 options = {
   api_host: '0.0.0.0', api_port: '4567', websocket_host: '0.0.0.0',
@@ -83,7 +84,7 @@ end
 EM.epoll
 EM.kqueue
 
-EM.run do
+EM.synchrony do
   File.tap { |f| require f.expand_path(f.join(f.dirname(__FILE__),'..', 'slanger.rb')) }
   Slanger::Config.load options
   Slanger::Service.run

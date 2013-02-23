@@ -1,4 +1,5 @@
 require 'eventmachine'
+require 'em-synchrony'
 require 'em-websocket'
 
 module Slanger
@@ -7,7 +8,7 @@ module Slanger
       EM.epoll
       EM.kqueue
 
-      EM.run do
+      EM.synchrony do
         options = {
           host:    Slanger::Config[:websocket_host],
           port:    Slanger::Config[:websocket_port],
@@ -24,9 +25,17 @@ module Slanger
           # Keep track of handler instance in instance of EM::Connection to ensure a unique handler instance is used per connection.
           ws.class_eval    { attr_accessor :connection_handler }
           # Delegate connection management to handler instance.
-          ws.onopen        { ws.connection_handler = Slanger::Config.socket_handler.new ws }
-          ws.onmessage     { |msg| ws.connection_handler.onmessage msg }
-          ws.onclose       { ws.connection_handler.onclose }
+          ws.onopen do
+            ws.connection_handler = Slanger::Config.socket_handler.new ws
+          end
+
+          ws.onmessage do |msg|
+            EM.synchrony { ws.connection_handler.onmessage msg }
+          end
+
+          ws.onclose do
+            ws.connection_handler.onclose
+          end
         end
       end
     end

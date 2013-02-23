@@ -59,7 +59,7 @@ module SlangerHelperMethods
 
   def em_thread
     Thread.new do
-      EM.run do
+      EM.synchrony do
         yield
       end
     end.join

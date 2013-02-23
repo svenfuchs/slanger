@@ -2,6 +2,17 @@
 # Interface with Redis.
 
 require 'forwardable'
+require 'em-synchrony'
+
+# Make EM::Hiredis.connect work with EM::Synchrony.sync
+EM::Hiredis::Client.class_eval do
+  alias _succeed succeed
+
+  def succeed *args
+    _succeed self
+    super
+  end
+end
 
 module Slanger
   module Redis
@@ -24,15 +35,17 @@ module Slanger
     def subscriber
       @subscriber ||= new_connection.tap do |c|
         c.on(:message) do |channel, message|
-          message = JSON.parse message
-          c = Channel.from message['channel']
-          c.dispatch message, channel
+          EM.synchrony do
+            message = JSON.parse message
+            c = Channel.from message['channel']
+            c.dispatch message, channel
+          end
         end
       end
     end
 
     def new_connection
-      EM::Hiredis.connect Slanger::Config.redis_address
+      EM::Synchrony.sync(EM::Hiredis.connect Slanger::Config.redis_address)
     end
 
     extend self

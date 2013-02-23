@@ -3,6 +3,7 @@ require 'bundler/setup'
 require 'active_support/json'
 require 'active_support/core_ext/hash'
 require 'eventmachine'
+require 'em-synchrony'
 require 'em-http-request'
 require 'pusher'
 require 'thin'
@@ -38,5 +39,8 @@ RSpec.configure do |config|
       p.secret = 'your-pusher-secret'
       p.key    = '765ec374ae0a69f4ce44'
     end
+  end
+  config.around(:each) do |example|
+    Fiber.new { example.run }.resume
   end
 end

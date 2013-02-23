@@ -25,7 +25,9 @@ describe 'Integration' do
         end
       end
 
-      EM.run { new_websocket.tap { |u| u.stream { EM.next_tick { EM.stop } } }}
+      EM.synchrony do
+        new_websocket.tap { |u| u.stream { EM.next_tick { EM.stop } } }
+      end
     end
   end
 end

@@ -44,7 +44,7 @@ module Slanger
 
       # fuuuuuuuuuccccccck!
       publisher.callback do
-        EM.next_tick do
+        EM::Synchrony.next_tick do
           # The Subscription event has been sent to Redis successfully.
           # Call the provided callback.
           callback.call
