@@ -1,14 +1,14 @@
 #!/usr/bin/env ruby -Ku
 
 require 'optparse'
-require 'bundler/setup'
 require 'eventmachine'
+require 'slanger'
+require 'slanger/version'
 
 options = {
   api_host: '0.0.0.0', api_port: '4567', websocket_host: '0.0.0.0',
   websocket_port: '8080', debug: false, redis_address: 'redis://0.0.0.0:6379/0'
-  }
-
+}
 
 OptionParser.new do |opts|
   opts.on '-h', '--help', 'Display this screen' do
@@ -68,10 +68,7 @@ OptionParser.new do |opts|
       exit
     end
   end
-
 end
-
-
 
 if options[:tls_options]
   [:cert_chain_file, :private_key_file].each do |param|
@@ -84,7 +81,6 @@ EM.epoll
 EM.kqueue
 
 EM.run do
-  File.tap { |f| require f.expand_path(f.join(f.dirname(__FILE__),'..', 'slanger.rb')) }
   Slanger::Config.load options
   Slanger::Service.run
 
