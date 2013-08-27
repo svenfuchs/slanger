@@ -15,8 +15,8 @@ Gem::Specification.new do |s|
   s.homepage                    = 'http://github.com/stevegraham/slanger'
 
   s.add_dependency                'eventmachine',     '~> 1.0.3'
-  s.add_dependency                'em-hiredis',       '~> 0.2.1'
-  s.add_dependency                'em-websocket',     '~> 0.5.0'
+  s.add_dependency                'em-hiredis',       '~> 0.1.0'
+  s.add_dependency                'em-websocket',     '~> 0.3.5'
   s.add_dependency                'rack',             '~> 1.5.2'
   s.add_dependency                'rack-fiber_pool',  '~> 0.9.3'
   s.add_dependency                'signature',        '~> 0.1.7'
