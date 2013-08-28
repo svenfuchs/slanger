@@ -6,7 +6,12 @@ module Slanger
     def run
       Slanger::Config[:require].each { |f| require f }
       Thin::Logging.silent = true
-      Rack::Handler::Thin.run Slanger::ApiServer, Host: Slanger::Config.api_host, Port: Slanger::Config.api_port
+      Rack::Handler::Thin.run Slanger::ApiServer, Host: Slanger::Config.api_host, Port: Slanger::Config.api_port do |thin|
+        # TODO move to config or options
+        thin.threaded = true
+        thin.no_epoll = true
+        thin.maximum_connections = 512
+      end
       Slanger::WebSocketServer.run
     end
 
