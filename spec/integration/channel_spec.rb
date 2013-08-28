@@ -8,14 +8,15 @@ describe 'Integration:' do
   describe 'channel' do
     it 'pushes messages to interested websocket connections' do
       messages = em_stream do |websocket, messages|
-        case messages.length
-        when 1
-          websocket.callback { websocket.send({ event: 'pusher:subscribe', data: { channel: 'MY_CHANNEL'} }.to_json) }
-        when 2
-          Pusher['MY_CHANNEL'].trigger 'an_event', some: "Mit Raben Und Wölfen"
-        when 3
-          EM.stop
-        end
+        websocket.callback { websocket.send({ event: 'pusher:subscribe', data: { channel: 'MY_CHANNEL'} }.to_json) }
+        # case messages.length
+        # when 1
+        #   websocket.callback { websocket.send({ event: 'pusher:subscribe', data: { channel: 'MY_CHANNEL'} }.to_json) }
+        # when 2
+        #   Pusher['MY_CHANNEL'].trigger 'an_event', some: "Mit Raben Und Wölfen"
+        # when 3
+        #   EM.stop
+        # end
      end
 
       messages.should have_attributes connection_established: true, id_present: true,

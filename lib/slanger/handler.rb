@@ -9,13 +9,14 @@ require 'fiber'
 module Slanger
   class Handler
 
-    attr_accessor :connection
+    attr_reader :app_key, :connection
     delegate :error, :send_payload, to: :connection
 
-    def initialize(socket)
+    def initialize(socket, app_key)
       @socket        = socket
       @connection    = Connection.new(@socket)
       @subscriptions = {}
+      @app_key       = app_key
       authenticate
     end
 
@@ -46,7 +47,7 @@ module Slanger
     end
 
     def authenticate
-      return connection.establish if valid_app_key? app_key
+      return connection.establish if valid_app_key?
 
       error({ code: 4001, message: "Could not find app by key #{app_key}" })
       @socket.close_websocket
@@ -78,11 +79,7 @@ module Slanger
 
     private
 
-    def app_key
-      @socket.request['path'].split(/\W/)[2]
-    end
-
-    def valid_app_key? app_key
+    def valid_app_key?
       Slanger::Config.app_key == app_key
     end
 
